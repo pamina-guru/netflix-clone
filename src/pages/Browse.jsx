@@ -27,8 +27,9 @@ export default function Browse() {
       setSearchLoading(true);
       try {
         const res = await api.get(requests.search(q));
-        setSearchMovies(res.data.results || []);
+        setSearchMovies(res.data?.results || []);
       } catch (e) {
+        console.error("Search error:", e);
         setSearchMovies([]);
       } finally {
         setSearchLoading(false);
@@ -42,13 +43,19 @@ export default function Browse() {
 
   return (
     <div className="min-h-screen bg-[#111] text-white">
+      {/* ✅ Navbar (profile switcher) */}
       <Navbar
         searchValue={search}
         onSearchChange={setSearch}
         onClearSearch={() => setSearch("")}
       />
 
-      {/* Hide banner when searching (feels more Netflix) */}
+      {/* ✅ Search bar UI is currently in the Navbar (your old props version).
+          If your Navbar is now the "Profiles" version (no search props),
+          we’ll add search back into Navbar tomorrow. For now, search remains here
+          but UI is not visible unless you keep the old search Navbar. */}
+
+      {/* Hide banner when searching */}
       {!isSearching && <Banner />}
 
       <div className="space-y-8 pb-10">
@@ -93,7 +100,8 @@ export default function Browse() {
         {/* Normal rows (show only when not searching) */}
         {!isSearching && (
           <>
-            <div id="trending">
+            {/* ✅ IDs updated to match Navbar smooth-scroll buttons */}
+            <div id="row-trending">
               <Row
                 title="Trending Now"
                 fetchUrl={requests.trending}
@@ -102,7 +110,7 @@ export default function Browse() {
               />
             </div>
 
-            <div id="toprated">
+            <div id="row-toprated">
               <Row
                 title="Top Rated"
                 fetchUrl={requests.topRated}

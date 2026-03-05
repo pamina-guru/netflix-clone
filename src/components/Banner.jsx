@@ -13,15 +13,28 @@ export default function Banner() {
     let alive = true;
 
     async function load() {
-      const res = await api.get(requests.trending);
-      const list = res.data.results || [];
-      const pick = list[Math.floor(Math.random() * list.length)];
-      if (!alive) return;
-      setMovie(pick);
+      try {
+        const res = await api.get(requests.trending);
+
+        const list = res.data?.results || [];
+        if (!list.length) return;
+
+        const pick = list[Math.floor(Math.random() * list.length)];
+
+        if (!alive) return;
+        setMovie(pick || null);
+      } catch (error) {
+        console.error("Banner TMDB error:", error);
+        if (!alive) return;
+        setMovie(null);
+      }
     }
 
     load();
-    return () => (alive = false);
+
+    return () => {
+      alive = false;
+    };
   }, []);
 
   return (
@@ -34,6 +47,7 @@ export default function Banner() {
             : "none",
         }}
       />
+
       <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-black/10" />
       <div className="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-black/40" />
 
@@ -50,6 +64,7 @@ export default function Banner() {
           <button className="px-6 py-2 rounded bg-white text-black font-semibold hover:bg-white/90">
             Play
           </button>
+
           <button className="px-6 py-2 rounded bg-white/20 border border-white/20 hover:bg-white/30">
             More Info
           </button>
